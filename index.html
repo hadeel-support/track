@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en" dir="ltr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MindTrack – My month at a glance</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap">
+<style>
+:root{--bg:#fbfdfd;--card:#fff;--ink:#23404b;--mute:#6b8088;--line:#d3e0e5;--teal:#2a8c8c;--blue:#4a8fb5;--green:#6fae97;--soft:#e6f1f6;--warn:#a8483a;--warnbg:#fbefea;--on:#fff;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#101d21;--card:#17292f;--ink:#e3eef1;--mute:#93a9b0;--line:#2b434b;--teal:#4cb5b0;--blue:#6aaed0;--green:#86c5ae;--soft:#1d3640;--warn:#ec9a8a;--warnbg:#2c1e1b}}
+:root[data-theme="dark"]{--bg:#101d21;--card:#17292f;--ink:#e3eef1;--mute:#93a9b0;--line:#2b434b;--teal:#4cb5b0;--blue:#6aaed0;--green:#86c5ae;--soft:#1d3640;--warn:#ec9a8a;--warnbg:#2c1e1b}
+*{box-sizing:border-box}html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:400 15px/1.5 Tajawal,system-ui,-apple-system,"Segoe UI",sans-serif;color-scheme:light dark}
+main{max-width:520px;margin:0 auto;padding:14px 14px 40px}
+header{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px 2px 12px}
+h1{font-size:23px;line-height:1.1;margin:0;font-weight:700;color:var(--teal)}
+h1 small{display:block;font-size:13px;font-weight:500;color:var(--mute);margin-top:3px}
+h2{font-size:15px;margin:0 0 8px;font-weight:700}
+button{font:inherit;color:inherit;cursor:pointer}
+#lang{border:1.5px solid var(--teal);background:transparent;color:var(--teal);border-radius:20px;padding:5px 14px;font-weight:700}
+section{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+.meds{display:grid;grid-template-columns:repeat(10,1fr);gap:6px}
+.meds button{aspect-ratio:1;border-radius:50%;border:2px solid var(--line);background:transparent;font-size:10px;color:var(--mute);padding:0;position:relative}
+.meds .t{background:var(--teal);border-color:var(--teal);color:var(--on)}
+.meds .m{border-color:var(--warn);color:var(--warn)}
+.meds .sel{outline:2.5px solid var(--blue);outline-offset:2px}
+.meds .se::after{content:"";position:absolute;bottom:-5px;left:50%;width:6px;height:6px;margin-left:-3px;background:var(--warn);border-radius:1px}
+.leg{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:12px;color:var(--mute);margin-top:12px}
+.leg i{display:inline-block;width:10px;height:10px;border-radius:50%;border:2px solid var(--line);vertical-align:-1px;margin-inline-end:4px}
+svg{width:100%;height:auto;display:block}
+.ch{margin-top:14px}.ch b{font-size:13px}.ch span{font-size:12px;color:var(--mute);margin-inline-start:8px}
+.nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.nav button{width:42px;height:42px;border-radius:50%;border:1.5px solid var(--line);background:var(--soft);font-size:18px}
+.nav strong{font-size:17px}
+.q{margin:14px 0 6px;font-weight:700;font-size:14px}.q span{font-weight:400;color:var(--mute);font-size:12px;margin-inline-start:6px}
+.row{display:flex;flex-wrap:wrap;gap:6px}
+.row button{min-width:40px;height:40px;border-radius:10px;border:1.5px solid var(--line);background:transparent;padding:0 10px}
+.row.b3 button,.row.b2 button{flex:1;height:46px}
+.row button[aria-pressed=true]{background:var(--teal);border-color:var(--teal);color:var(--on);font-weight:700}
+.row button.w[aria-pressed=true]{background:var(--warn);border-color:var(--warn)}
+.note{font-size:12px;color:var(--mute);margin:8px 0 0}
+.safe{background:var(--warnbg);border-color:transparent;color:var(--warn);font-size:13px}
+#reset{border:0;background:none;color:var(--mute);text-decoration:underline;padding:6px 0;font-size:13px}
+button:focus-visible{outline:2.5px solid var(--blue);outline-offset:2px}
+</style></head>
+<body><main>
+<header><h1>MindTrack<small id="sub"></small></h1><button id="lang" aria-label="Language / اللغة">عربي</button></header>
+<section><h2 id="hg"></h2><div class="meds" id="meds"></div>
+<div class="leg" id="leg"></div>
+<div class="ch"><b id="cm"></b><span id="cms"></span><svg id="gm" viewBox="0 0 300 100" role="img"></svg></div>
+<div class="ch"><b id="ca"></b><span id="cas"></span><svg id="ga" viewBox="0 0 300 100" role="img"></svg></div>
+<p class="note" id="pat"></p></section>
+<section id="entry"></section>
+<section class="safe" id="safe"></section>
+<p class="note" id="store"></p><button id="reset"></button>
+</main>
+<script>
+const L={en:{sub:"My month at a glance",hg:"The month at a glance",tk:"Taken",ms:"Missed",nr:"Not recorded",sx:"Side effect",
+cm:"Mood",cms:"0 lowest · 10 best",ca:"Anxiety",cas:"0 calm · 10 most intense",
+pat:"Patterns are for discussing with your healthcare professional. They do not show whether treatment is working.",
+day:"Day",of:"of 30",q1:"Did I take my medication as prescribed?",yes:"Yes",no:"No",
+q2:"Mood today",q3:"Anxiety today",q4:"Energy",q5:"Sleep",q7:"Concentration",q8:"Appetite",q6:"Any side effect today?",lo:"Low",mi:"Medium",hi:"High",
+safe:"This is a personal record – not a diagnosis, and no replacement for your doctor. Never change or stop medication on your own. If you think of harming yourself, contact your local emergency number now.",
+store:"Your entries stay on this device only.",reset:"Clear this month",sure:"Tap again to confirm",lb:"عربي",
+t0:"0 lowest",t10:"10 best",a0:"0 calm",a10:"10 most intense"},
+ar:{sub:"شهري بنظرة واحدة",hg:"الشهر بنظرة واحدة",tk:"أخذت",ms:"فاتتني",nr:"لم يُسجَّل",sx:"عَرَض جانبي",
+cm:"المزاج",cms:"0 الأدنى · 10 الأفضل",ca:"القلق",cas:"0 هادئ · 10 الأشد",
+pat:"الأنماط للنقاش مع المختص الصحي، ولا تدل على نجاح العلاج أو فشله.",
+day:"اليوم",of:"من 30",q1:"هل أخذت دواءك كما وُصف؟",yes:"نعم",no:"لا",
+q2:"المزاج اليوم",q3:"القلق اليوم",q4:"الطاقة",q5:"النوم",q7:"التركيز",q8:"الشهية",q6:"هل لاحظت عَرَضاً جانبياً اليوم؟",lo:"منخفضة",mi:"متوسطة",hi:"عالية",
+safe:"سجل شخصي، وليس تشخيصاً ولا بديلاً عن طبيبك. لا تغيّر دواءك ولا توقفه من تلقاء نفسك. وإذا راودتك أفكار لإيذاء نفسك، فتواصل فوراً مع رقم الطوارئ المحلي.",
+store:"تُحفَظ بياناتك على هذا الجهاز فقط.",reset:"مسح بيانات هذا الشهر",sure:"اضغط مرة أخرى للتأكيد",lb:"English"}};
+const K="mindtrack.v2";let S={lang:"en",d:{},sel:1};
+try{const r=localStorage.getItem(K);if(r)S=Object.assign(S,JSON.parse(r))}catch(e){}
+const save=()=>{try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}};
+const $=i=>document.getElementById(i),t=k=>L[S.lang][k];
+const E=d=>S.d[d]||(S.d[d]={});
+if(!S.started){S.started=1;let f=1;while(f<30&&S.d[f]&&S.d[f].t!=null)f++;S.sel=f}
+function chart(id,key,col){let p="",pts="",prev=0;const x=d=>10+(d-1)*(280/29),y=v=>92-v*8.2;
+let g="";[0,5,10].forEach(v=>g+=`<line x1="10" x2="290" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)" stroke-width=".6"/><text x="${S.lang=="ar"?296:4}" y="${y(v)+3}" font-size="7" fill="var(--mute)" text-anchor="middle">${v}</text>`);
+[8,15,22,29].forEach(d=>g+=`<line x1="${x(d)-4.8}" x2="${x(d)-4.8}" y1="4" y2="92" stroke="var(--line)" stroke-width=".5" stroke-dasharray="2 2"/>`);
+for(let d=1;d<=30;d++){const v=(S.d[d]||{})[key];if(v==null){prev=0;continue}
+p+=(prev?"L":"M")+x(d).toFixed(1)+" "+y(v).toFixed(1);prev=1;pts+=`<circle cx="${x(d).toFixed(1)}" cy="${y(v).toFixed(1)}" r="${d==S.sel?4.2:2.8}" fill="${col}"/>`}
+$(id).innerHTML=g+`<path d="${p}" fill="none" stroke="${col}" stroke-width="1.6" stroke-linejoin="round"/>`+pts}
+function chips(key,n,cls){let h=`<div class="row ${cls||""}">`;const v=E(S.sel)[key];
+for(let i=0;i<n;i++)h+=`<button data-k="${key}" data-v="${i}" aria-pressed="${v===i}">${n==3?[t("lo"),t("mi"),t("hi")][i]:i}</button>`;return h+"</div>"}
+function render(){const A=S.lang=="ar";document.documentElement.lang=S.lang;document.documentElement.dir=A?"rtl":"ltr";
+$("lang").textContent=t("lb");$("sub").textContent=t("sub");$("hg").textContent=t("hg");
+$("cm").textContent=t("cm");$("cms").textContent=t("cms");$("ca").textContent=t("ca");$("cas").textContent=t("cas");
+$("pat").textContent=t("pat");$("safe").textContent=t("safe");$("store").textContent=t("store");$("reset").textContent=t("reset");
+let m="";for(let d=1;d<=30;d++){const e=S.d[d]||{};m+=`<button data-day="${d}" class="${e.t===1?"t":e.t===0?"m":""} ${d==S.sel?"sel":""} ${e.x?"se":""}" aria-label="${t("day")} ${d}">${d}</button>`}
+$("meds").innerHTML=m;
+$("leg").innerHTML=`<span><i style="background:var(--teal);border-color:var(--teal)"></i>${t("tk")}</span><span><i style="border-color:var(--warn)"></i>${t("ms")}</span><span><i></i>${t("nr")}</span><span><i style="border-radius:2px;background:var(--warn);border-color:var(--warn);width:7px;height:7px"></i>${t("sx")}</span>`;
+chart("gm","mo","var(--teal)");chart("ga","a","var(--blue)");
+const e=E(S.sel);
+$("entry").innerHTML=`<div class="nav"><button data-nav="-1" aria-label="‹">${A?"›":"‹"}</button><strong>${t("day")} ${S.sel} <span style="font-weight:400;color:var(--mute);font-size:13px">${t("of")}</span></strong><button data-nav="1" aria-label="›">${A?"‹":"›"}</button></div>
+<div class="q">${t("q1")}</div><div class="row b2"><button data-k="t" data-v="1" aria-pressed="${e.t===1}">${t("yes")}</button><button class="w" data-k="t" data-v="0" aria-pressed="${e.t===0}">${t("no")}</button></div>
+<div class="q">${t("q2")}<span>${t("cms")}</span></div>${chips("mo",11)}
+<div class="q">${t("q3")}<span>${t("cas")}</span></div>${chips("a",11)}
+<div class="q">${t("q4")}</div>${chips("e",3,"b3")}<div class="q">${t("q5")}</div>${chips("s",3,"b3")}<div class="q">${t("q7")}</div>${chips("c",3,"b3")}<div class="q">${t("q8")}</div>${chips("p",3,"b3")}
+<div class="q">${t("q6")}</div><div class="row b2"><button class="w" data-k="x" data-v="1" aria-pressed="${e.x===1}">${t("yes")}</button><button data-k="x" data-v="0" aria-pressed="${e.x===0}">${t("no")}</button></div>`}
+document.addEventListener("click",ev=>{const b=ev.target.closest("button");if(!b)return;
+if(b.id=="lang"){S.lang=S.lang=="en"?"ar":"en"}
+else if(b.dataset.day){S.sel=+b.dataset.day}
+else if(b.dataset.nav){S.sel=Math.min(30,Math.max(1,S.sel+ +b.dataset.nav))}
+else if(b.dataset.k){const e=E(S.sel),v=+b.dataset.v;e[b.dataset.k]=e[b.dataset.k]===v?null:v}
+else if(b.id=="reset"){if(b.dataset.arm){S.d={};S.sel=1;delete b.dataset.arm}else{b.dataset.arm=1;b.textContent=t("sure");return}}
+save();render()});
+render();
+</script></body></html>
